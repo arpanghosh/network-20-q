@@ -1,6 +1,51 @@
 class HomeController < ApplicationController
 
   def index
+    @error = false  
+  
+    if (params['error'])
+      @error = true
+    end
+
+  end
+
+  def vote
+    votes = params['votes']
+    ranks = votes.values
+
+    begin
+      ranks.collect! {|r| Integer(r)}
+      
+      if (ranks.to_set.length != 10)
+        redirect_to :controller => 'home', :action => 'index',
+                                            :error => true
+        return  
+      end
+
+      if (ranks.max > 10 || ranks.min < 1)
+        redirect_to :controller => 'home', :action => 'index',
+                                            :error => true
+        return
+      end
+    
+    rescue
+      redirect_to :controller => 'home', :action => 'index',
+                                            :error => true
+      return
+    end
+
+    v = Vote.new
+    votes.keys.each do |key|
+      m = "#{key}="
+      v.send( m, votes[key] ) if v.respond_to?( m )
+    end
+    v.save
+  
+    redirect_to '/home/success'
+  end
+
+  
+  def success
   end
 
 
