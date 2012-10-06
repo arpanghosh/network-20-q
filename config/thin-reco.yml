@@ -1,0 +1,13 @@
+pid: tmp/pids/thin.pid
+wait: 240
+timeout: 240
+log: log/thin.log
+max_conns: 1000
+require: []
+max_persistent_conns: 128
+environment: production
+servers: 5
+port: 3000
+threaded: true
+no-epoll: true
+daemonize: true
