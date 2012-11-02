@@ -1,0 +1,26 @@
+<h1>"<%= Question.find(params['qid']).text %>"</h1>
+
+<h2>Select someone to forward this question to</h2>
+<h4 style="text-align:right;"><a href="/experiment2/dashboard">Back to Dashboard</a></h4>
+
+<%= form_tag("/experiment2/submit_forward?qid=" + params['qid'], :method => "put") do %>
+
+<h3>Here are your friends taking this course...</h3>
+<div style="width:100%; overflow:auto">
+<table width="100%" cellpadding="15">
+<tr>
+<% @potential_forwardees.each do |f| %>
+  <td style="width:10%"  align = "middle">
+      <img src="http://graph.facebook.com/<%= f['id'] %>/picture?type=large"/><br/><br/>
+      <%= check_box('id', f['id']) %>&nbsp;
+      <font size="4"><%= f['name'].split[0] %></font>
+  </td>
+<% end %>
+</tr>
+</table>
+</div>
+
+
+<%= submit_tag("Forward the Question") %>
+<% end %>
+

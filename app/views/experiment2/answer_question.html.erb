@@ -1,0 +1,15 @@
+<% if params['error'] == 'true' %>
+  <h3><font color="#C82536">Answer cannot be blank!</font></h3>
+<% end %>
+
+<h1>"<%= Question.find(params['qid']).text %>"</h1>
+<h4 style="text-align:right;"><a href="/experiment2/dashboard">Back to Dashboard</a></h4>
+
+<%= form_tag("/experiment2/submit_answer?qid=" + params['qid'], :method => "put") do %>
+    Answer:<br><%= text_area(:answer, :text, :size => "100x15") %>
+    <br/>
+    <br/>
+    <%= submit_tag("Submit Answer") %>
+<% end %>
+<br/>
+

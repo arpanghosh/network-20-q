@@ -1,0 +1,13 @@
+<% if params['error'] == 'true' %>
+  <h3><font color="#C82536">Question cannot be blank!</font></h3>
+<% end %>
+<h4 style="text-align:right;"><a href="/experiment2/dashboard">Back to Dashboard</a></h4>
+
+<%= form_tag("/experiment2/submit_question", :method => "put") do %>
+    New Question:<br><%= text_area(:question, :text, :size => "100x15") %>
+    <br/>
+    <br/>
+    <%= submit_tag("Submit Question") %>
+<% end %>
+<br>
+

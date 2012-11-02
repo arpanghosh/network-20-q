@@ -1,14 +1,23 @@
 Network20qApp::Application.routes.draw do
 
-#  get "experiment1/index"
+  get "experiment2/index"
+  get "experiment2/callback"
+  get "experiment2/dashboard"
+  get "experiment2/add_question"
+  put "experiment2/submit_question"
+  get "experiment2/logout"
+  get "experiment2/answer_question"
+  get "experiment2/forward_question"
+  put "experiment2/submit_answer"
+  put "experiment2/submit_forward"
+
+  get "experiment1/index"
+  get "experiment1/pagerank"
+  get "experiment1/callback"
 
   get 'home/index'
-#	get 'home/login'
-#	get 'home/callback'
-#	get 'home/welcome'
-#	get 'home/logout'
-  get 'home/vote'
-  get 'home/success' 
+  get 'home/welcome'
+  get 'home/back'
 
 	# The priority is based upon order of creation:
   # first created -> highest priority.

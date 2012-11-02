@@ -1,0 +1,26 @@
+<h1>Welcome to the Network20q Facebook App</h1>
+<h3>We will be using this app to run various social networking experiments related to the course.</h3>
+<br/>
+<br/>
+
+<h2>Q6 Demo: Analysis of Voting Systems</h2>
+<h4>Vote for the best movie. We need your votes in the form of a ranked list. Put a number from 1 to 10 against each movie. (1 - best, 10 - worst)</h4>
+<% if @error == true %>
+  <h3><font color="red">Error: Check your ranks</font></h3>
+<% end %>
+<%= form_tag("/home/vote", :method => "get") do %>
+    <%= text_field(:votes, :shawshank_redemption, :size => 2) %>The Shawshank Redemption (1994) <br/>
+    <%= text_field(:votes, :lotr_rotk, :size => 2) %>The Lord of the Rings: The Return of the King (2003) <br/>
+    <%= text_field(:votes, :fight_club, :size => 2) %>Fight Club (1999) <br/> 
+    <%= text_field(:votes, :dark_knight, :size => 2) %>The Dark Knight (2008) <br/>
+    <%= text_field(:votes, :twelve_angry_men, :size => 2) %>12 Angry Men (1957) <br/>
+    <%= text_field(:votes, :godfather, :size => 2) %>The Godfather (1972) <br/>
+    <%= text_field(:votes, :pulp_fiction, :size => 2) %>Pulp Fiction (1994) <br/>    
+    <%= text_field(:votes, :good_bad_ugly, :size => 2) %>The Good, the Bad and the Ugly (1966) <br/> 
+    <%= text_field(:votes, :schindlers_list, :size => 2) %>Schindler's List (1993) <br/>
+    <%= text_field(:votes, :godfather_2, :size => 2) %>The Godfather: Part II (1974) <br/>
+    <br/><br/>
+    <%= submit_tag("Submit Vote") %>
+<% end %>
+<br/>
+<br/>

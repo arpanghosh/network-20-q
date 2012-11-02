@@ -1,0 +1,39 @@
+<h1>Hi <%= @embed_username %></h1>
+<h4 style="text-align:right;" ><%="("%><%= @embed_logout.html_safe%><%=")"%></h4>
+
+<% if ((Integer(session['user_id']) == ADMIN_ID) || (Integer(session['user_id']) == ZHENMING_ID)) %>
+<h3>
+<a href="/experiment2/add_question?error=false">Add more questions</a>
+</h3>
+<% end %>
+<br/>
+
+<ol>
+<% @questions_to_display.each do |q| %>
+
+<li><h4><%= q.text %></h4>
+<% if q.suggesters %>
+<i>
+
+<% q.suggesters.each do |s| %>
+<%= s %>,&nbsp;
+<% end %>
+
+<% if q.suggesters.length > 1 %>
+think you can answer this.
+<% else %>
+thinks you can answer this.
+<% end %>
+
+</i>
+<br/>
+<% end %>
+
+<a href="/experiment2/answer_question?qid=<%= q._id.to_s %>&error=false">Answer</a>&nbsp;|&nbsp;
+<a href="/experiment2/forward_question?qid=<%= q._id.to_s %>">Know someone else who can answer it? </a>
+</li>
+<br/><br/>
+<% end %>
+</ol>
+
+<br>

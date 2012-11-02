@@ -13,11 +13,15 @@ GRAPH_FRIENDS_PATH = 'me/friends'
 
 APP_ID="249425315112705"                                    # Network20q Sandbox
 APP_SECRET="a4d26991f6a48ce07e3b1e721ee3fb31"               # Network20q Sandbox               
-SITE_URL="http://localhost:3000/"                     # Network20q Sandbox
+SITE_URL="http://localhost:3000/"                           # Network20q Sandbox
 
 
 ADMIN_ID = 12816025
-
+NETWORK20Q_ID = 100004288031329
+ZHENMING_ID = 100000251287986
 
 GRAPH_URL= "https://graph.facebook.com/"
 PROFILE_URL="http://www.facebook.com/profile.php?id="
+
+
+

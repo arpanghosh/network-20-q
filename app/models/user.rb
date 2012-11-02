@@ -8,13 +8,18 @@ class User
   key :coursera, Boolean, :default => false
 
 	key :friends, Array
+  key :friends_in_class, Array
+
+  many  :answers
+  many  :suggestions
   
 	timestamps!
 
 
 
 	def birthday=(bdayString)
-  	self[:age] = Integer(Date.today - Date.strptime(bdayString, "%m/%d/%Y"))/365
+  	self[:age] = 
+        Integer(Date.today - Date.strptime(bdayString, "%m/%d/%Y"))/365
 	end
 
 
