@@ -1,8 +1,0 @@
-<h1>Welcome to the Network20q Facebook App</h1>
-<h2>We will be using this app to run various social networking experiments related to the course.</h2>
-<h4>Use your Facebook credentials to login.</h4>
-<%= form_tag("/home/login", :method => "get") do %>
-    <%= submit_tag("Login using Facebook") %>
-<% end %>
-<br/>
-<br/>
