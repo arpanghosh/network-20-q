@@ -8,7 +8,7 @@ class User
   key :coursera, Boolean, :default => false
 
 	key :facebook_friends, Array
-  key :friends_in_class, Array
+  key :facebook_friends_in_class, Array
 
   many  :questions
   many  :answers

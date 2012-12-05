@@ -106,7 +106,7 @@ class Experiment2Controller < ApplicationController
         m = "#{key}="
         u.send( m, user_info[key] ) if u.respond_to?( m )
       end
-      #u.friends_in_class = (User.all.map {|u| {"name" => u.name, "id" => u.id}} &
+      #u.facebook_friends_in_class = (User.all.map {|u| {"name" => u.name, "id" => u.id}} &
       #                        User.find(session['user_id']).facebook_friends)
       u.save
     else
