@@ -1,5 +1,5 @@
 body {
-  background-color: #B0E0E6;
+  background-color: #3B5998;
   font-family: Verdana, Helvetica, Arial;
   font-size: 14px;
 }
@@ -26,6 +26,8 @@ a {
   border: solid 1px black;
   margin-top: 20px;
 }
+
+
 
 #flash_notice, #flash_error, #flash_alert {
   padding: 5px 8px;

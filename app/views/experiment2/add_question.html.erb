@@ -1,10 +1,15 @@
 <% if params['error'] == 'true' %>
-  <h3><font color="#C82536">Question cannot be blank!</font></h3>
+  <h2><font color="#C82536">Question cannot be blank!</font></h2>
 <% end %>
+
+<h2>You have added <%= @user.questions.count %> questions. Add <%= 5 - @user.questions.count %> more.</h2>
+
 <h4 style="text-align:right;"><a href="/experiment2/dashboard">Back to Dashboard</a></h4>
 
 <%= form_tag("/experiment2/submit_question", :method => "put") do %>
-    New Question:<br><%= text_area(:question, :text, :size => "100x15") %>
+    <b>New Question:<br><%= text_area(:question, :text, :size => "100x15") %></b>
+    <br/>
+    <b>Answer:<br><%= text_area(:question, :answer, :size => "100x5") %></b>
     <br/>
     <br/>
     <%= submit_tag("Submit Question") %>

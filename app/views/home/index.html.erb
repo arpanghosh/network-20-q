@@ -1,8 +1,11 @@
-<h1>Welcome to the Network20q Facebook App</h1>
-<h2>We will be using this app to run various social networking experiments related to the course.</h2>
-<h4>Check out the experiments</h4>
-<%= form_tag("/home/welcome", :method => "get") do %>
-    <%= submit_tag("Participate in the experiments") %>
+<h1>Welcome to the Network20q Social Search App</h1>
+<h2>We will use the class' social graph to evaluate the effectiveness of social search or a social Q&A forum.
+</h2>
+<h4>
+You will need to login with your Facebook credentials to partitcipate. We will not use any of your data or post anything to your wall. We just need the class social graph</h4>
+<%= form_tag("/experiment2/index", :method => "get") do %>
+    <%= submit_tag("Participate in the experiment", 
+                    options = {:style => "width: 200px; background-color: #ABABAB; color: #000000; "}) %>
 <% end %>
 <br/>
 <br/>

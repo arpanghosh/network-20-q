@@ -7,14 +7,14 @@ class User
   key :gender, String
   key :coursera, Boolean, :default => false
 
-	key :friends, Array
+	key :facebook_friends, Array
   key :friends_in_class, Array
 
+  many  :questions
   many  :answers
   many  :suggestions
   
 	timestamps!
-
 
 
 	def birthday=(bdayString)

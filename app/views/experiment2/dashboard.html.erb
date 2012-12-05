@@ -1,15 +1,10 @@
-<h1>Hi <%= @embed_username %></h1>
+<h1>Hi <%= @user.name.split[0] %></h1>
 <h4 style="text-align:right;" ><%="("%><%= @embed_logout.html_safe%><%=")"%></h4>
 
-<% if ((Integer(session['user_id']) == ADMIN_ID) || (Integer(session['user_id']) == ZHENMING_ID)) %>
-<h3>
-<a href="/experiment2/add_question?error=false">Add more questions</a>
-</h3>
-<% end %>
-<br/>
+<h2>Thanks for registering for the experiment!</h2>
 
 <ol>
-<% @questions_to_display.each do |q| %>
+<% @question_to_display.each do |q| %>
 
 <li><h4><%= q.text %></h4>
 <% if q.suggesters %>
@@ -36,4 +31,3 @@ thinks you can answer this.
 <% end %>
 </ol>
 
-<br>

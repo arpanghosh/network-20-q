@@ -22,7 +22,6 @@ class Experiment2Controller < ApplicationController
 
 
   def dashboard
-
 		if not session['access_token']
       redirect_to :root
       return
@@ -31,18 +30,15 @@ class Experiment2Controller < ApplicationController
     if not session['user_id']	
 		  session['graph'] = 
           Koala::Facebook::API.new(session['access_token'])
-		  user_info = session['graph']
-          .get_object('me', {:fields => USER_FIELDS})
+		  user_info = 
+          session['graph'].get_object('me', {:fields => USER_FIELDS})
       session['user_id'] = user_info['id']
       add_new_user(user_info)
     end
 
-    update_user
-    u = User.find(session['user_id'])
+    @user = User.find(session['user_id'])
 
-    @questions_to_display = dashboard_questions(u)
-
-		@embed_username = u['name'].split[0]
+    @question_to_display = [] #dashboard_question(u)
 		@embed_logout = '<a href="/experiment2/logout">Logout</a>'
 	end
 
@@ -53,6 +49,7 @@ class Experiment2Controller < ApplicationController
       return
     end
 
+    @user = User.find(session['user_id'])
   end
 
   
@@ -62,11 +59,19 @@ class Experiment2Controller < ApplicationController
       return
     end
 
-    if params['question']['text'].length > 0
+    if params['question']['text'].length > 0 && params['question']['answer'].length > 0
       q = Question.new
       q.text = params['question']['text']
+      q.answer = params['question']['answer']
+      q.user = User.find(session['user_id'])
       q.save
-      redirect_to :action => 'add_question', :error => 'false'
+    
+      if q.user.questions.count == 5
+        redirect_to :action => 'dashboard'
+      else
+        redirect_to :action => 'add_question', :error => 'false'
+      end
+
     else
       redirect_to :action => 'add_question', :error => 'true'
     end
@@ -79,8 +84,7 @@ class Experiment2Controller < ApplicationController
       return
     end
 
-    logout_url = 
-        "https://www.facebook.com/logout.php?next=" + 
+    logout_url = "https://www.facebook.com/logout.php?next=" + 
         SITE_URL  + "&access_token=" + session['access_token']
     session['oauth'] = nil
     session['access_token'] = nil
@@ -92,21 +96,18 @@ class Experiment2Controller < ApplicationController
 
   
   def add_new_user(user_info)
-    
     if User.find(user_info['id']).nil?
-      user_info['friends'] = session['graph']
+      user_info['facebook_friends'] = session['graph']
                                 .get_connections("me", "friends")
-      logger.debug "Number of Friends #{user_info['friends'].length}"
+      logger.debug "\n\nNumber of Friends #{user_info['facebook_friends'].length}\n\n"
 
       u = User.new
-        user_info.keys.each do |key|
-          m = "#{key}="
-          u.send( m, user_info[key] ) if u.respond_to?( m )
-        end
-        u.friends_in_class = ((User.find(NETWORK20Q_ID.to_s).friends |
-        User.all.map {|u| {"name" => u.name, "id" => u.id}}) &
-        User.find(session['user_id']).friends).select {|f| !((f['id'] == NETWORK20Q_ID.to_s) &&
-          (f['id'] == session['user_id']))}
+      user_info.keys.each do |key|
+        m = "#{key}="
+        u.send( m, user_info[key] ) if u.respond_to?( m )
+      end
+      #u.friends_in_class = (User.all.map {|u| {"name" => u.name, "id" => u.id}} &
+      #                        User.find(session['user_id']).facebook_friends)
       u.save
     else
       logger.debug "\n\nUser already stored\n\n"
@@ -114,9 +115,9 @@ class Experiment2Controller < ApplicationController
   end
 
 
-  def dashboard_questions(user)
-
-    questions = Question.all - 
+  def dashboard_question(user)
+    questions = Question.all -
+                user.questions - 
                 user.answers.map {|a| a.question } -
                 user.suggestions.map {|s| s.question}
 
@@ -168,23 +169,22 @@ class Experiment2Controller < ApplicationController
 
 
   def forward_question
+    if not session['access_token']
+      redirect_to :root
+      return
+    end
+
     @potential_forwardees = User.find(session['user_id']).friends_in_class
-  end
-
-
-  def update_user
-    u = User.find(session['user_id'])
-    u.friends_in_class = ((User.find(NETWORK20Q_ID.to_s).friends |
-        User.all.map {|u| {"name" => u.name, "id" => u.id}}) &
-        User.find(session['user_id']).friends).select {|f| !((f['id'] == NETWORK20Q_ID.to_s) &&
-          (f['id'] == session['user_id']))}
-    u.save
   end
 
   
   def submit_forward
-    forwardees = params['id'].select{|a,b| b == "1"}.keys
-  
+    if not session['access_token']
+      redirect_to :root
+      return
+    end
+
+    forwardees = params['id'].select{|k,v| v == "1"}.keys
     forwardees.each do |fw|
       s = Suggestion.new
       s.suggestee = fw
@@ -192,7 +192,6 @@ class Experiment2Controller < ApplicationController
       s.user = User.find(session['user_id'])
       s.save  
     end   
- 
     redirect_to "/experiment2/dashboard"
   end
 

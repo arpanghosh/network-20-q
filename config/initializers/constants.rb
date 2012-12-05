@@ -18,7 +18,6 @@ SITE_URL="http://localhost:3000/"                           # Network20q Sandbox
 
 ADMIN_ID = 12816025
 NETWORK20Q_ID = 100004288031329
-ZHENMING_ID = 100000251287986
 
 GRAPH_URL= "https://graph.facebook.com/"
 PROFILE_URL="http://www.facebook.com/profile.php?id="
