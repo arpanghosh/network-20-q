@@ -1,0 +1,7 @@
+<h1>Hi <%= @user.name.split[0] %></h1>
+<h4 style="text-align:right;" ><%="("%><%= @embed_logout.html_safe%><%=")"%></h4>
+
+
+<%= form_tag("/experiment2/forwardees_and_questions", :method => "get" ) do %>
+<%= submit_tag("Start the experiment", options = {:style => "width: 200px; background-color: #ABABAB; color: #000000; "}) %>
+<%end%>

@@ -21,6 +21,21 @@ class Experiment2Controller < ApplicationController
   end
 
 
+  def submit_major
+    if not session['access_token']
+      redirect_to :root
+      return
+    end
+  
+    u = User.find(session['user_id'])
+    u.present = true
+    u.major = params["major"]["name"]
+    u.save 
+    
+    redirect_to :action => 'go'
+  end   
+
+
   def dashboard
 		if not session['access_token']
       redirect_to :root
@@ -37,12 +52,97 @@ class Experiment2Controller < ApplicationController
     end
 
     @user = User.find(session['user_id'])
-
-    @question_to_display = [] #dashboard_question(u)
 		@embed_logout = '<a href="/experiment2/logout">Logout</a>'
 	end
 
 
+  def go
+    if not session['access_token']
+      redirect_to :root
+      return
+    end
+
+    @user = User.find(session['user_id'])
+    @embed_logout = '<a href="/experiment2/logout">Logout</a>'
+  end
+ 
+
+  def forwardees_and_questions
+    if not session['access_token']
+      redirect_to :root
+      return
+    end
+
+    @user = User.find(session['user_id'])
+    #@user.facebook_friends_in_class = (User.all.select{|u| u.present == true }.map {|u| {"name" => u.name, "id" => u.id}} &
+    #                                   @user.facebook_friends)
+    @user.facebook_friends_in_class = (User.all.map {|u| {"name" => u.name, "id" => u.id}} &
+                                       @user.facebook_friends)       
+    generate_questions(@user)      
+    @user.save
+
+    redirect_to :action => 'question'
+  end
+ 
+
+  def generate_questions(user)
+    user.question_queue = []
+    rng = Random.new(Time.now.nsec) 
+    
+    #Other users whose questions are to be given to this user  
+    #other_users = User.all.select{|u| u.present == true }.map{|u| u.id } - [user.id]
+    other_users = User.all.map{|u| u.id } - [user.id]
+
+    #Other majors whose questions are to be given to this user
+    other_majors = MAJORS - [user.major]
+
+    ##Question A
+    user.question_queue << QUESTION_A[other_users[rng.rand(other_users.length)]]._id
+
+    ##Question B
+    user.question_queue << QUESTION_B[other_majors[rng.rand(other_majors.length)]]._id
+    
+    ##Question C
+    user.question_queue << QUESTION_C[other_users[rng.rand(other_users.length)]]._id
+
+    ##Question D
+    user.question_queue << QUESTION_D[other_majors[rng.rand(other_majors.length)]]._id  
+  end  
+
+  
+  def question
+    if not session['access_token']
+      redirect_to :root
+      return
+    end 
+ 
+    @user = User.find(session['user_id'])
+    
+    if params['qid']
+      qid = params['qid']
+    else
+      tackled = Set.new
+      tackled.merge(@user.answers.map{|a| a.question._id.to_s} + @user.suggestions.map{|s| s.question._id.to_s})
+      while true
+        qid = @user.question_queue.last
+        break if ((not tackled.include?(qid)) or (not qid))
+        @user.question_queue.pop()
+      end
+    end
+
+    if qid 
+      @question = Question.find(qid)
+    else
+      @question = nil
+    end
+    
+    @user.save
+
+    @embed_logout = '<a href="/experiment2/logout">Logout</a>'
+  end
+
+
+=begin
   def add_question
     if not session['access_token']
       redirect_to :root
@@ -76,6 +176,7 @@ class Experiment2Controller < ApplicationController
       redirect_to :action => 'add_question', :error => 'true'
     end
   end
+=end
 
   
   def logout
@@ -99,22 +200,21 @@ class Experiment2Controller < ApplicationController
     if User.find(user_info['id']).nil?
       user_info['facebook_friends'] = session['graph']
                                 .get_connections("me", "friends")
-      logger.debug "\n\nNumber of Friends #{user_info['facebook_friends'].length}\n\n"
+      #logger.debug "\n\nNumber of Friends #{user_info['facebook_friends'].length}\n\n"
 
       u = User.new
       user_info.keys.each do |key|
         m = "#{key}="
         u.send( m, user_info[key] ) if u.respond_to?( m )
       end
-      #u.facebook_friends_in_class = (User.all.map {|u| {"name" => u.name, "id" => u.id}} &
-      #                        User.find(session['user_id']).facebook_friends)
       u.save
     else
-      logger.debug "\n\nUser already stored\n\n"
+      #logger.debug "\n\nUser already stored\n\n"
     end    
   end
 
 
+=begin
   def dashboard_question(user)
     questions = Question.all -
                 user.questions - 
@@ -137,6 +237,7 @@ class Experiment2Controller < ApplicationController
   
     return questions.sort { |q1,q2| q1.updated_at <=> q2.updated_at }.reverse
   end
+=end
 
 
   def answer_question
@@ -144,6 +245,8 @@ class Experiment2Controller < ApplicationController
       redirect_to :root
       return
     end
+
+    @embed_back = '<a href="/experiment2/question?qid=' + params['qid'] + '">Back to the question</a>'
   end
 
 
@@ -159,7 +262,12 @@ class Experiment2Controller < ApplicationController
       a.question = Question.find(params['qid'])
       a.user = User.find(session['user_id'])
       a.save
-      redirect_to :action => 'dashboard'
+
+      u = User.find(session['user_id'])
+      u.question_queue.pop()
+      u.save
+
+      redirect_to :action => 'question'
     else
       redirect_to :action => 'answer_question', 
                   :error => 'true', 
@@ -174,7 +282,8 @@ class Experiment2Controller < ApplicationController
       return
     end
 
-    @potential_forwardees = User.find(session['user_id']).friends_in_class
+    @potential_forwardees = User.find(session['user_id']).facebook_friends_in_class
+    @embed_back = '<a href="/experiment2/question?qid=' + params['qid'] + '">Back to the question</a>'
   end
 
   
@@ -184,15 +293,22 @@ class Experiment2Controller < ApplicationController
       return
     end
 
-    forwardees = params['id'].select{|k,v| v == "1"}.keys
-    forwardees.each do |fw|
-      s = Suggestion.new
-      s.suggestee = fw
-      s.question = Question.find(params['qid'])
-      s.user = User.find(session['user_id'])
-      s.save  
-    end   
-    redirect_to "/experiment2/dashboard"
+    forwardee = params['forwardee']['id']
+    s = Suggestion.new
+    s.suggestee = forwardee
+    s.question = Question.find(params['qid'])
+    s.user = User.find(session['user_id'])
+    s.save
+
+    u = User.find(forwardee)
+    u.question_queue << s.question._id
+    u.save
+
+    u = User.find(session['user_id'])
+    u.question_queue.pop()
+    u.save
+
+    redirect_to "/experiment2/question"
   end
 
 

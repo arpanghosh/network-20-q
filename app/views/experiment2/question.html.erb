@@ -1,0 +1,14 @@
+<h1>Hi <%= @user.name.split[0] %></h1>
+<h4 style="text-align:right;" ><%="("%><%= @embed_logout.html_safe%><%=")"%></h4>
+
+<% if @question %>
+<h3><%= @question.text %></h3>
+<br>
+<a href="/experiment2/answer_question?qid=<%= @question._id.to_s %>&error=false">Answer it</a>&nbsp;|&nbsp;
+<a href="/experiment2/forward_question?qid=<%= @question._id.to_s %>">Know someone else who can answer it? </a>
+<% else %>
+<h3> There are currently no more questions in your stack. Keep hitting refresh periodically to check for new questions to answer.</h3><br>
+<%= form_tag("/experiment2/question", :method => "get" ) do %>
+<%= submit_tag("Check for questions", options = {:style => "width: 200px; background-color: #ABABAB; color: #000000; "}) %>
+<% end %>
+<% end %>

@@ -6,9 +6,13 @@ class User
   key :age, Integer
   key :gender, String
   key :coursera, Boolean, :default => false
+  key :present, Boolean, :default => false
+  key :major, String
 
 	key :facebook_friends, Array
   key :facebook_friends_in_class, Array
+
+  key :question_queue, Array
 
   many  :questions
   many  :answers

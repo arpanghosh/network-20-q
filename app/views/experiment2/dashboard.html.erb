@@ -1,33 +1,13 @@
 <h1>Hi <%= @user.name.split[0] %></h1>
 <h4 style="text-align:right;" ><%="("%><%= @embed_logout.html_safe%><%=")"%></h4>
 
-<h2>Thanks for registering for the experiment!</h2>
+<h3>Specify your major to continue</h3>
 
-<ol>
-<% @question_to_display.each do |q| %>
-
-<li><h4><%= q.text %></h4>
-<% if q.suggesters %>
-<i>
-
-<% q.suggesters.each do |s| %>
-<%= s %>,&nbsp;
-<% end %>
-
-<% if q.suggesters.length > 1 %>
-think you can answer this.
-<% else %>
-thinks you can answer this.
-<% end %>
-
-</i>
-<br/>
-<% end %>
-
-<a href="/experiment2/answer_question?qid=<%= q._id.to_s %>&error=false">Answer</a>&nbsp;|&nbsp;
-<a href="/experiment2/forward_question?qid=<%= q._id.to_s %>">Know someone else who can answer it? </a>
-</li>
-<br/><br/>
-<% end %>
-</ol>
-
+<%= form_tag("/experiment2/submit_major", :method => "put") do %>
+  <%= radio_button("major", "name", "electrical engineering", options = {:checked => true}) %>Electrical Engineering<br>
+  <%= radio_button("major", "name", "computer science") %>Computer Science<br>
+  <%= radio_button("major", "name", "economics") %>Economics<br>
+  <%= radio_button("major", "name", "political science") %>Political Science<br><br>
+<%= submit_tag("Submit", options = {:style => "width: 200px; background-color: #ABABAB; color: #000000; "}) %>
+<%end%>
+<br>
