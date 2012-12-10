@@ -74,10 +74,20 @@ class Experiment2Controller < ApplicationController
     end
 
     @user = User.find(session['user_id'])
+
+    other_classmates = (User.all.map {|u| {"name" => u.name, "id" => u.id}} - 
+                       [{"name" => @user.name, "id" => @user.id}] - @user.facebook_friends)
+
+    if other_classmates.length > 0
+      random_classmate = [other_classmates.sample()]
+    else
+      random_classmate = []
+    end
+
     #@user.facebook_friends_in_class = (User.all.select{|u| u.present == true }.map {|u| {"name" => u.name, "id" => u.id}} &
-    #                                   @user.facebook_friends)
+    #                                   @user.facebook_friends) + random_classmate
     @user.facebook_friends_in_class = (User.all.map {|u| {"name" => u.name, "id" => u.id}} &
-                                       @user.facebook_friends)       
+                                       @user.facebook_friends) + random_classmate       
     generate_questions(@user)      
     @user.save
 
