@@ -3,6 +3,7 @@
 <h3>Select someone to forward this question to</h3>
 <h4 style="text-align:right;"><%= @embed_back.html_safe %></h4>
 
+<% if @potential_forwardees.length > 0 %>
 <%= form_tag("/experiment2/submit_forward?qid=" + params['qid'], :method => "put") do %>
 
 <h3>Here are your friends taking this course...</h3>
@@ -22,5 +23,8 @@
 
 
 <%= submit_tag("Forward the Question", options = {:style => "width: 200px; background-color: #ABABAB; color: #000000; "}) %>
+<% end %>
+<% else %>
+<h3>You have run out of people to forward this question to.</h3>
 <% end %>
 

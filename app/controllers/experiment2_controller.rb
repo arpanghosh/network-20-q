@@ -97,16 +97,16 @@ class Experiment2Controller < ApplicationController
     other_majors = MAJORS - [user.major]
 
     ##Question A
-    user.question_queue << QUESTION_A[other_users[rng.rand(other_users.length)]]._id
+    user.question_queue << QUESTION_A[other_users[rng.rand(other_users.length)]]._id.to_s
 
     ##Question B
-    user.question_queue << QUESTION_B[other_majors[rng.rand(other_majors.length)]]._id
+    user.question_queue << QUESTION_B[other_majors[rng.rand(other_majors.length)]]._id.to_s
     
     ##Question C
-    user.question_queue << QUESTION_C[other_users[rng.rand(other_users.length)]]._id
+    user.question_queue << QUESTION_C[other_users[rng.rand(other_users.length)]]._id.to_s
 
     ##Question D
-    user.question_queue << QUESTION_D[other_majors[rng.rand(other_majors.length)]]._id  
+    user.question_queue << QUESTION_D[other_majors[rng.rand(other_majors.length)]]._id.to_s  
   end  
 
   
@@ -126,12 +126,15 @@ class Experiment2Controller < ApplicationController
       while true
         qid = @user.question_queue.last
         break if ((not tackled.include?(qid)) or (not qid))
-        @user.question_queue.pop()
+        @user.question_queue.delete(qid)
       end
     end
 
     if qid 
       @question = Question.find(qid)
+      @forwarders = @question.suggestions
+                    .select {|s| s.suggestee == session['user_id']}
+                    .map{|s| s.user.name}
     else
       @question = nil
     end
@@ -264,7 +267,7 @@ class Experiment2Controller < ApplicationController
       a.save
 
       u = User.find(session['user_id'])
-      u.question_queue.pop()
+      u.question_queue.delete(params['qid'])
       u.save
 
       redirect_to :action => 'question'
@@ -282,7 +285,10 @@ class Experiment2Controller < ApplicationController
       return
     end
 
-    @potential_forwardees = User.find(session['user_id']).facebook_friends_in_class
+    already_forwarded = Question.find(params['qid']).suggestions
+                          .select {|s| s.suggestee == session['user_id']}
+                          .map{|s| {"name" => s.user.name, "id" => s.user.id}}
+    @potential_forwardees = User.find(session['user_id']).facebook_friends_in_class - already_forwarded
     @embed_back = '<a href="/experiment2/question?qid=' + params['qid'] + '">Back to the question</a>'
   end
 
@@ -301,12 +307,12 @@ class Experiment2Controller < ApplicationController
     s.save
 
     u = User.find(forwardee)
-    u.question_queue << s.question._id
+    u.question_queue << s.question._id.to_s
     u.save
 
-    u = User.find(session['user_id'])
-    u.question_queue.pop()
-    u.save
+    me = User.find(session['user_id'])
+    me.question_queue.delete(params['qid'])
+    me.save
 
     redirect_to "/experiment2/question"
   end

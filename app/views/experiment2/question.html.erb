@@ -4,6 +4,16 @@
 <% if @question %>
 <h3><%= @question.text %></h3>
 <br>
+
+<% if @forwarders.length > 0 %>
+<h4>
+<% @forwarders.each do |f| %>
+<%= f %>,&nbsp;
+<% end %>
+forwarded this question to you.
+</h4>  
+<% end %>
+
 <a href="/experiment2/answer_question?qid=<%= @question._id.to_s %>&error=false">Answer it</a>&nbsp;|&nbsp;
 <a href="/experiment2/forward_question?qid=<%= @question._id.to_s %>">Know someone else who can answer it? </a>
 <% else %>
